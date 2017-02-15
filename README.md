@@ -1,6 +1,9 @@
 # Massive-Data-Processing - 1rst Assignement
 Due 16th of February 2016
 
+Preleminary matter: the set-up
+img/
+
 You are asked to implement an inverted index in MapReduce for the document corpus of: 
 * pg100.txt (from http://www.gutenberg.org/cache/epub/100/pg100.txt)
 * pg31100.txt (from http://www.gutenberg.org/cache/epub/31100/pg31100.txt)

@@ -1,3 +1,2 @@
 # Massive-Data-Processing
-Massive Data Processing Course //
-Testing first github commit...
+Massive Data Processing Course

@@ -1,3 +1,5 @@
+// This code corresponds to question A, i of the assignment
+
 package inverted_index;
 
 import org.apache.hadoop.conf.Configured;

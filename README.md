@@ -2,7 +2,8 @@
 Due 16th of February 2016
 
 Preleminary matter: the set-up
-img/
+In order to complete the assignment we used the following Hadoop set-up
+![HadoopSetUp](img/Hadoop_Set_up.png)
 
 You are asked to implement an inverted index in MapReduce for the document corpus of: 
 * pg100.txt (from http://www.gutenberg.org/cache/epub/100/pg100.txt)

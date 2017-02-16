@@ -30,8 +30,11 @@ This corpus includes the complete works of William Shakespear, Mark Twain and Ja
 
 An inverted index provides for each distinct word in a document corpus, the filenames that contain this word, along with some other information (e.g., count/position within each document).
 
-### (a)(30) Run a MapReduce program to identify stop words (words with frequency > 4000) for the given document corpus. Store them in a single csv file on HDFS (stopwords.csv). You can edit the several parts of the reducers’ output after the job finishes (with hdfs commands or with a text editor), in order to merge them as a single csv file.
+#### (a)(30) Run a MapReduce program to identify stop words (words with frequency > 4000) for the given document corpus. Store them in a single csv file on HDFS (stopwords.csv). You can edit the several parts of the reducers’ output after the job finishes (with hdfs commands or with a text editor), in order to merge them as a single csv file.
 #### i. (10) Use 10 reducers and do not use a combiner. Report the execution time.
+
+We start by creating a new project, package and class similarly to what was done in assignment 0. Rather than coding the whole job from the ground up we used the WordCount class which we tweaked to our purposes:
+
 
 ```
 cd ~/workspace/InvertedIndex

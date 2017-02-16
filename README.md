@@ -74,4 +74,4 @@ Found 11 items
 ```
 
 Looking at the job's logs we see that the total run time 1min 35sec:
-[Job Tracker](image/Screen_Shot_Stop_Words_10_reducers_no_combiner.jpg)
+![Job Tracker](image/Screen_Shot_Stop_Words_10_reducers_no_combiner.jpg)

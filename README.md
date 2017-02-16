@@ -3,6 +3,7 @@ Due 16th of February 2016
 
 Preleminary matter: the set-up
 In order to complete the assignment we used the following Hadoop set-up:
+
 Using:
 `
 hadoop version checknative -adfsadmin

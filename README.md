@@ -112,7 +112,7 @@ We output is composed of 50 seperate files and the run time is signifcantly long
 
 To obtain a csv file we add `job.getConfiguration().set("mapreduce.output.textoutputformat.separator", ",");` in our class.
 
-See here for our final resul: [Result Section A](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/outputs/part-r-00000)
+See here for our final result: [Result Section A](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/outputs/part-r-00000)
 
 #### (b) (30) Implement a simple inverted index for the given document corpus, as shown in the previous Table, skipping the words of stopwords.csv.
 
@@ -141,7 +141,7 @@ public static class Map extends Mapper<LongWritable, Text, Text, Text> { // the 
 ```
 
 The reduce class we implement is the following:
-```
+```java
 public static class Reduce extends Reducer<Text, Text, Text, Text> { // both input and output for both key and value is text
       @Override
       public void reduce(Text key, Iterable<Text> values, Context context)
@@ -158,4 +158,42 @@ public static class Reduce extends Reducer<Text, Text, Text, Text> { // both inp
          
       }
 ```
+You can find the full code relative to this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/code/InvertedIndex_QB.java)
+
+In order to excluse the stop words from our inverted index we have 2 options: either we get rid of them in the map phase or we suppress them later on during the reduce phase. Intuitevely it seems that taking care of the stop words in the map phase is better design since we do not carry data we do not want for an extra step. We do this by changing the map class as follows:
+```java
+public static class Map extends Mapper<LongWritable, Text, Text, Text> { // the output of the mapper is text for both key & value 
+      private Text word = new Text(); // we define the variable corresponding to the key
+      private Text file_membership = new Text(); // we define the variable corresponding to the value
+
+      @Override
+      public void map(LongWritable key, Text value, Context context)
+              throws IOException, InterruptedException {
+    	  
+    	 HashSet<String> excluded_words = new HashSet<String>(); 
+    	 BufferedReader DocumentReader = new BufferedReader( // we use BuffferedReader to read our stop words file.
+    			 new FileReader(new File("/home/cloudera/workspace/InvertedIndex/output/stop_words_final_output.txt")));
+    	 
+    	// words present in the stop words file are added in a list that cannot contain duplicates
+    	 String case_;
+    	 while ((case_ = DocumentReader.readLine()) != null) { 
+    		 excluded_words.add(case_.toLowerCase());
+    	 }
+    	 String file_name = ((FileSplit) context.getInputSplit()) // we get the document name associated to the key...
+                  .getPath().getName();
+         file_membership = new Text(file_name); // ... and store it in a text variable
+         
+         for (String token: value.toString().split("\\s+")) {
+            if (!excluded_words.contains(token.toLowerCase(Locale.ENGLISH))) { // we check that the word is not a stop word
+            	word.set(token.toLowerCase());
+            }
+         }
+         context.write(word, file_membership); // output in the inverted index format
+      }
+  }
+```
+You can find the full code relative to this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/code/Full_InvertedIndex_QB.java)
+
+The run time of the job is 49 sec. You can find the output [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Inverted_Index_Excluding_Stop_Words.png)
+
 

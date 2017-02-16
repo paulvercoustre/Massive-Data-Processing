@@ -53,5 +53,23 @@ if (sum > 4000) {              // we only write keys associated to values > 4000
 ```
 * We set the number of reducers to 10 with (see [reference list](References.md)):
 ```java
-job.setNumReduceTasks(1);
+job.setNumReduceTasks(10);
 ```
+We run the job in the terminal and observe our results with the command `hadoop fs -ls outpu_stop_word_10_reducers_no_combiner`
+
+As expected we obtain the following:
+```
+Found 11 items
+-rw-r--r--   1 cloudera cloudera          0 2017-02-16 03:04 output_stop_word_10_reducers_no_combiner/_SUCCESS
+-rw-r--r--   1 cloudera cloudera        108 2017-02-16 03:03 output_stop_word_10_reducers_no_combiner/part-r-00000
+-rw-r--r--   1 cloudera cloudera        198 2017-02-16 03:04 output_stop_word_10_reducers_no_combiner/part-r-00001
+-rw-r--r--   1 cloudera cloudera        159 2017-02-16 03:04 output_stop_word_10_reducers_no_combiner/part-r-00002
+-rw-r--r--   1 cloudera cloudera        100 2017-02-16 03:04 output_stop_word_10_reducers_no_combiner/part-r-00003
+-rw-r--r--   1 cloudera cloudera         51 2017-02-16 03:04 output_stop_word_10_reducers_no_combiner/part-r-00004
+-rw-r--r--   1 cloudera cloudera         98 2017-02-16 03:04 output_stop_word_10_reducers_no_combiner/part-r-00005
+-rw-r--r--   1 cloudera cloudera        138 2017-02-16 03:04 output_stop_word_10_reducers_no_combiner/part-r-00006
+-rw-r--r--   1 cloudera cloudera        129 2017-02-16 03:04 output_stop_word_10_reducers_no_combiner/part-r-00007
+-rw-r--r--   1 cloudera cloudera        167 2017-02-16 03:04 output_stop_word_10_reducers_no_combiner/part-r-00008
+-rw-r--r--   1 cloudera cloudera         29 2017-02-16 03:04 output_stop_word_10_reducers_no_combiner/part-r-00009
+```
+

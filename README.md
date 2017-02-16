@@ -112,8 +112,7 @@ We output is composed of 50 seperate files and the run time is signifcantly long
 
 To obtain a csv file we add `job.getConfiguration().set("mapreduce.output.textoutputformat.separator", ",");` in our class.
 
-We obtain the following: 
-![Result Section A](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/outputs/part-r-00000)
+See here for our final resul: [Result Section A](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/outputs/part-r-00000)
 
 #### (b) (30) Implement a simple inverted index for the given document corpus, as shown in the previous Table, skipping the words of stopwords.csv.
 

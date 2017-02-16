@@ -79,9 +79,20 @@ Looking at the job's logs we see that the total run time is 1min 35sec (see [Job
 
 In order to run the job using a Combiner we simply add `job.setCombinerClass(Reduce.class); // we add a combiner` (see [reference list](References.md). 
 
-We obtain similar results except this time the run time went down to 1min 19sec (see[Job Tracker](image/Screen_Shot_Stop_Words_10_reducers.jpg)
+We obtain similar results except this time the run time went down to 1min 19sec (see [Job Tracker](image/Screen_Shot_Stop_Words_10_reducers.jpg))
 
 This makes sense because instead of passing all the key-value pairs from the mapper to the reducer, the Combiner ensures that key-value pairs with the same key are grouped. This reduces the amount of data passed on to the reduce step.
 
 #### iii. (5) Run the same program again, this time compressing the intermediate results of map (using any codec you wish). Report the execution time. Is there any difference in the execution, time compared to the previous execution? Why?
+
+Building on the changes we made previously, we add the following to compress the output of map before it is passed on to next step (see [reference list](References.md)):
+```
+conf.setBoolean(Job.MAP_OUTPUT_COMPRESS, true); // we compress the map output using BZip2Codec
+      conf.setClass(Job.MAP_OUTPUT_COMPRESS_CODEC, BZip2Codec.class,
+```
+
+We obtain similar results and the run time is almost the same : 1 min  18sec. The fact that compression does not seem to have a significant impact may be due to the relatively small size of the data we are working with. When scaling up, the impact of compression is usually blatant. (see [Job Tracker](image/Screen_Shot_Stop_Words_10_reducers_map_compression)).jpg
+
+#### iv. (5) Run the same program again, this time using 50 reducers. Report the execution time. Is there any difference in the execution time, compared to the previous execution? Why?
+
 

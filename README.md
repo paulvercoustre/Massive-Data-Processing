@@ -9,7 +9,7 @@ Using:
 hadoop version checknative -adfsadmin
 `
 
-We obtain
+We obtain:
 ```
 Hadoop 2.6.0-cdh5.5.0
 Subversion http://github.com/cloudera/hadoop -r fd21232cef7b8c1f536965897ce20f50b83ee7b2

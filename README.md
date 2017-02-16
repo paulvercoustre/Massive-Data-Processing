@@ -1,13 +1,14 @@
 # Massive-Data-Processing - 1rst Assignement
 Due 16th of February 2016
 
-Preleminary matter: the set-up
+## Preleminary matter: the set-up
 In order to complete the assignment we used the following Hadoop set-up:
 
 Using:
 `
 hadoop version checknative -adfsadmin
 `
+
 We obtain
 ```
 Hadoop 2.6.0-cdh5.5.0
@@ -17,7 +18,9 @@ Compiled with protoc 2.5.0
 From source with checksum 98e07176d1787150a6a9c087627562c
 This command was run using /usr/jars/hadoop-common-2.6.0-cdh5.5.0.jar
 ```
-This has been run on recommended Cloudera Quickstart Vitual Machine, for better performance the base memory has been set to 8102 MB
+This has been run on the recommended Cloudera Quickstart Vitual Machine, for better performance the base memory has been set to 8102 MB
+
+## Intructions
 You are asked to implement an inverted index in MapReduce for the document corpus of: 
 * pg100.txt (from http://www.gutenberg.org/cache/epub/100/pg100.txt)
 * pg31100.txt (from http://www.gutenberg.org/cache/epub/31100/pg31100.txt)
@@ -27,8 +30,8 @@ This corpus includes the complete works of William Shakespear, Mark Twain and Ja
 
 An inverted index provides for each distinct word in a document corpus, the filenames that contain this word, along with some other information (e.g., count/position within each document).
 
-(a) (30) Run a MapReduce program to identify stop words (words with frequency > 4000) for the given document corpus. Store them in a single csv file on HDFS (stopwords.csv). You can edit the several parts of the reducers’ output after the job finishes (with hdfs commands or with a text editor), in order to merge them as a single csv file.
-i. (10) Use 10 reducers and do not use a combiner. Report the execution time.
+### (a)(30) Run a MapReduce program to identify stop words (words with frequency > 4000) for the given document corpus. Store them in a single csv file on HDFS (stopwords.csv). You can edit the several parts of the reducers’ output after the job finishes (with hdfs commands or with a text editor), in order to merge them as a single csv file.
+#### i. (10) Use 10 reducers and do not use a combiner. Report the execution time.
 
 ```
 cd ~/workspace/InvertedIndex

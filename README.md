@@ -91,8 +91,14 @@ conf.setBoolean(Job.MAP_OUTPUT_COMPRESS, true); // we compress the map output us
       conf.setClass(Job.MAP_OUTPUT_COMPRESS_CODEC, BZip2Codec.class,
 ```
 
-We obtain similar results and the run time is almost the same : 1 min  18sec. The fact that compression does not seem to have a significant impact may be due to the relatively small size of the data we are working with. When scaling up, the impact of compression is usually blatant. (see [Job Tracker](image/Screen_Shot_Stop_Words_10_reducers_map_compression)).jpg
+We obtain similar results and the run time is almost the same : 1 min  18sec. The fact that compression does not seem to have a significant impact may be due to the relatively small size of the data we are working with. When scaling up, the impact of compression is usually blatant. (see [Job Tracker](image/Screen_Shot_Stop_Words_10_reducers_map_compression.jpg))
 
 #### iv. (5) Run the same program again, this time using 50 reducers. Report the execution time. Is there any difference in the execution time, compared to the previous execution? Why?
 
+Here we simply need to change `java
+job.setNumReduceTasks(10);
+` to `java
+job.setNumReduceTasks(50);
+`
 
+We output is composed of 50 seperate files and the run time is signifcantly longer than the previous jobs: 4mins 31sec. Again, this makes sense because we are running on a single machine therefore each reducer has to wait for the previous reducer to be done with it's work before it can start operating. (see [Job Tracker](image/Screen_Shot_Stop_Words_50_reducers.jpg))

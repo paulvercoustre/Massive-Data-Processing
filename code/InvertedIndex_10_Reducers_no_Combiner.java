@@ -1,4 +1,4 @@
-// This code corresponds to question A, i of the assignment
+// This code corresponds to question A of the assignment
 
 package inverted_index;
 
@@ -12,6 +12,8 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.BZip2Codec;
+import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -33,17 +35,22 @@ public class InvertedIndex extends Configured implements Tool {
    @Override
    public int run(String[] args) throws Exception {
       System.out.println(Arrays.toString(args));
-      Job job = new Job(getConf(), "InvertedIndex");
+      Configuration conf = new Configuration();
+      conf.setBoolean(Job.MAP_OUTPUT_COMPRESS, true); // we compress the map output using BZip2Codec
+      conf.setClass(Job.MAP_OUTPUT_COMPRESS_CODEC, BZip2Codec.class,
+      CompressionCodec.class);
+      Job job = new Job(conf);
       job.setJarByClass(InvertedIndex.class);
       job.setOutputKeyClass(Text.class);
       job.setOutputValueClass(IntWritable.class);
 
       job.setMapperClass(Map.class);
       job.setReducerClass(Reduce.class);
-      job.setNumReduceTasks(10); // we set the number of reducers to 10
+      job.setNumReduceTasks(10); // we can set the number of reducers. Here to 10
+      job.setCombinerClass(Reduce.class); // we add a combiner
 
       job.setInputFormatClass(TextInputFormat.class);
-      job.setOutputFormatClass(TextOutputFormat.class);
+      job.setOutputFormatClass(TextOutputFormat.class);   
 
       FileInputFormat.addInputPath(job, new Path(args[0]));
       FileOutputFormat.setOutputPath(job, new Path(args[1]));

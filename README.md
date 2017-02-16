@@ -194,7 +194,7 @@ public static class Map extends Mapper<LongWritable, Text, Text, Text> { // the 
 ```
 You can find the full code relative to this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/code/Full_InvertedIndex_QB.java)
 
-The run time of the job is 49 sec. You can find the output [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/outputs/Inverted_Index_QB)
+The run time of the job is 49 sec. You can find the output [Result Section B](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/outputs/Inverted_Index_QB)
 
 ![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Inverted_Index_Excluding_Stop_Words.png)
 

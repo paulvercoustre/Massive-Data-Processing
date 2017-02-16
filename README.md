@@ -73,7 +73,7 @@ Found 11 items
 -rw-r--r--   1 cloudera cloudera         29 2017-02-16 03:04 output_stop_word_10_reducers_no_combiner/part-r-00009
 ```
 
-Looking at the job's logs we see that the total run time is 1min 35sec (see [Job Tracker](image/Screen_Shot_Stop_Words_10_reducers_no_combiner.jpg)). The complete code for this job is available [here](code/InvertedIndex_10_Reducers_no_Combiner.java)
+Looking at the job's logs we see that the total run time is 1min 35sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_10_reducers_no_combiner.jpg)). The complete code for this job is available [here](code/InvertedIndex_10_Reducers_no_Combiner.java)
 
 ![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_10_reducers_no_combiner.jpg)
 
@@ -81,7 +81,9 @@ Looking at the job's logs we see that the total run time is 1min 35sec (see [Job
 
 In order to run the job using a Combiner we simply add `job.setCombinerClass(Reduce.class); // we add a combiner` (see [reference list](References.md). 
 
-We obtain similar results except this time the run time went down to 1min 19sec (see [Job Tracker](image/Screen_Shot_Stop_Words_10_reducers.jpg))
+We obtain similar results except this time the run time went down to 1min 19sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_10_reducers.jpg))
+
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_10_reducers.jpg)
 
 This makes sense because instead of passing all the key-value pairs from the mapper to the reducer, the Combiner ensures that key-value pairs with the same key are grouped. This reduces the amount of data passed on to the reduce step.
 
@@ -93,7 +95,9 @@ conf.setBoolean(Job.MAP_OUTPUT_COMPRESS, true); // we compress the map output us
       conf.setClass(Job.MAP_OUTPUT_COMPRESS_CODEC, BZip2Codec.class,
 ```
 
-We obtain similar results and the run time is almost the same : 1 min  18sec. The fact that compression does not seem to have a significant impact may be due to the relatively small size of the data we are working with. When scaling up, the impact of compression is usually blatant. (see [Job Tracker](image/Screen_Shot_Stop_Words_10_reducers_map_compression.jpg))
+We obtain similar results and the run time is almost the same : 1 min  18sec. The fact that compression does not seem to have a significant impact may be due to the relatively small size of the data we are working with. When scaling up, the impact of compression is usually blatant. (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_10_reducers_map_compression.jpg))
+
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_10_reducers_map_compression.jpg)
 
 #### iv. (5) Run the same program again, this time using 50 reducers. Report the execution time. Is there any difference in the execution time, compared to the previous execution? Why?
 
@@ -103,4 +107,11 @@ job.setNumReduceTasks(10);
 job.setNumReduceTasks(50);
 `
 
-We output is composed of 50 seperate files and the run time is signifcantly longer than the previous jobs: 4mins 31sec. Again, this makes sense because we are running on a single machine therefore each reducer has to wait for the previous reducer to be done with it's work before it can start operating. (see [Job Tracker](image/Screen_Shot_Stop_Words_50_reducers.jpg))
+We output is composed of 50 seperate files and the run time is signifcantly longer than the previous jobs: 4mins 31sec. Again, this makes sense because we are running on a single machine therefore each reducer has to wait for the previous reducer to be done with it's work before it can start operating. (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_50_reducers.png))
+[Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_50_reducers.png)
+
+To obtain a csv file we add `job.getConfiguration().set("mapreduce.output.textoutputformat.separator", ",");` in our class
+
+#### (b) (30) Implement a simple inverted index for the given document corpus, as shown in the previous Table, skipping the words of stopwords.csv.
+
+

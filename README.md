@@ -79,7 +79,7 @@ Looking at the job's logs we see that the total run time is 1min 35sec (see [Job
 
 #### ii. (10) Run the same program again, this time using a Combiner. Report the execution time. Is there any difference in the execution time, compared to the previous execution? Why?
 
-In order to run the job using a Combiner we simply add `job.setCombinerClass(Reduce.class); // we add a combiner` (see [reference list](References.md). 
+In order to run the job using a Combiner we simply add `job.setCombinerClass(Reduce.class); // we add a combiner` (see [reference list](References.md)). 
 
 We obtain similar results except this time the run time went down to 1min 19sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_10_reducers.jpg))
 

@@ -51,7 +51,7 @@ word.set(token.toLowerCase(Locale.ENGLISH));
 if (sum > 4000) {              // we only write keys associated to values > 4000 on the output file
         	 context.write(key, new IntWritable(sum));
 ```
-* We set the number of reducers to 10 with (see [reference list](References.md):
+* We set the number of reducers to 10 with (see [reference list](References.md)):
 ```java
 job.setNumReduceTasks(1);
 ```

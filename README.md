@@ -142,7 +142,7 @@ public static class Map extends Mapper<LongWritable, Text, Text, Text> { // the 
 
 The reduce class we implement is the following:
 ```
-   public static class Reduce extends Reducer<Text, Text, Text, Text> { // both input and output for both key and value is text
+public static class Reduce extends Reducer<Text, Text, Text, Text> { // both input and output for both key and value is text
       @Override
       public void reduce(Text key, Iterable<Text> values, Context context)
               throws IOException, InterruptedException {

@@ -44,8 +44,10 @@ public class InvertedIndex extends Configured implements Tool {
 
       job.setMapperClass(Map.class);
       job.setReducerClass(Reduce.class);
-      job.setNumReduceTasks(10); // we set the number of reducers to 10
+      job.setNumReduceTasks(1); // we set the number of reducers to 50
       job.setCombinerClass(Reduce.class); // we add a combiner
+      
+      job.getConfiguration().set("mapreduce.output.textoutputformat.separator", ","); // getting a csv formatted output
 
       job.setInputFormatClass(TextInputFormat.class);
       job.setOutputFormatClass(TextOutputFormat.class);   

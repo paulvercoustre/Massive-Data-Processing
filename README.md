@@ -1,4 +1,4 @@
-# Massive-Data-Processing - 1rst Assignement
+# Massive-Data-Processing - 1st Assignement
 Due 16th of February 2016
 
 ## Preleminary matter: the set-up
@@ -73,7 +73,7 @@ Found 11 items
 -rw-r--r--   1 cloudera cloudera         29 2017-02-16 03:04 output_stop_word_10_reducers_no_combiner/part-r-00009
 ```
 
-Looking at the job's logs we see that the total run time is 1min 35sec (see[Job Tracker](image/Screen_Shot_Stop_Words_10_reducers_no_combiner.jpg)). The complete code for this job is available [here](code/InvertedIndex_10_Reducers_no_Combiner.java)
+Looking at the job's logs we see that the total run time is 1min 35sec (see [Job Tracker](image/Screen_Shot_Stop_Words_10_reducers_no_combiner.jpg)). The complete code for this job is available [here](code/InvertedIndex_10_Reducers_no_Combiner.java)
 
 #### ii. (10) Run the same program again, this time using a Combiner. Report the execution time. Is there any difference in the execution time, compared to the previous execution? Why?
 

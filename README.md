@@ -116,4 +116,46 @@ See here for our final resul: [Result Section A](https://github.com/paulvercoust
 
 #### (b) (30) Implement a simple inverted index for the given document corpus, as shown in the previous Table, skipping the words of stopwords.csv.
 
+In order to make our work easier in the beginning, we will implement an inverted index that does not exclude the stop words. We use the class previously created as a base for this task since it's mostly the map and reduce class that will need to be modified.
+
+The resulting map class is:
+```java
+public static class Map extends Mapper<LongWritable, Text, Text, Text> { // the output of the mapper is text for the key and text for the value 
+      private Text word = new Text(); // we define the variable corresponding to the key
+      private Text file_membership = new Text(); // we define the variable corresponding to the value
+
+      @Override
+      public void map(LongWritable key, Text value, Context context)
+              throws IOException, InterruptedException {
+    	 
+    	 String file_name = ((FileSplit) context.getInputSplit()) // we get the document name associated
+                  .getPath().getName();
+         file_membership = new Text(file_name);
+         
+         for (String token: value.toString().split("\\s+")) {
+            word.set(token.toLowerCase(Locale.ENGLISH)); // we convert all strings to lower case
+            context.write(word, file_membership); // output in the inverted index format
+         }
+      }
+   }
+```
+
+The reduce class we implement is the following:
+```
+   public static class Reduce extends Reducer<Text, Text, Text, Text> { // both input and output for both key and value is text
+      @Override
+      public void reduce(Text key, Iterable<Text> values, Context context)
+              throws IOException, InterruptedException {
+    	  
+    	  Set<String> document_list = new LinkedHashSet<String>();
+    	  
+    	  for (Text val : values) {
+    		  document_list.add(val.toString());
+    	  }
+    	  
+    	  context.write(key, new Text(document_list.toString().replace("[","").replace("]","")));  
+         }
+         
+      }
+```
 

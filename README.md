@@ -73,3 +73,5 @@ Found 11 items
 -rw-r--r--   1 cloudera cloudera         29 2017-02-16 03:04 output_stop_word_10_reducers_no_combiner/part-r-00009
 ```
 
+Looking at the job's logs we see that the total run time 1min 35sec:
+[Job Tracker](image/Screen_Shot_Stop_Words_10_reducers_no_combiner.jpg)

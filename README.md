@@ -110,7 +110,10 @@ job.setNumReduceTasks(50);
 We output is composed of 50 seperate files and the run time is signifcantly longer than the previous jobs: 4mins 31sec. Again, this makes sense because we are running on a single machine therefore each reducer has to wait for the previous reducer to be done with it's work before it can start operating. (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_50_reducers.png))
 ![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_50_reducers.png)
 
-To obtain a csv file we add `job.getConfiguration().set("mapreduce.output.textoutputformat.separator", ",");` in our class
+To obtain a csv file we add `job.getConfiguration().set("mapreduce.output.textoutputformat.separator", ",");` in our class.
+
+We obtain the following: 
+![Result Section A](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/outputs/part-r-00000)
 
 #### (b) (30) Implement a simple inverted index for the given document corpus, as shown in the previous Table, skipping the words of stopwords.csv.
 

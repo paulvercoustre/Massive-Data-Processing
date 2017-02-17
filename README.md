@@ -285,6 +285,7 @@ Which gives 57 003 unique words present in 1 document only.
 
 #### (d) (30) Extend the inverted index of (b), in order to keep the frequency of each word for each document. The new output should be of the form:
 
+| Key  | Value                              | 
 | ---- |:----------------------------------:|
 | this | doc1.txt#1, doc2.txt#1             |
 | is   | doc1.txt#2, doc2.txt#1, doc3.txt#1 |

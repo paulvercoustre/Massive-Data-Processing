@@ -281,7 +281,7 @@ Map-Reduce Framework
 		Total committed heap usage (bytes)=773603328
 ```
 
-Which gives 57 003 unique words present in 1 document only. 
+We see that there are 57 003 unique words present in 1 document only. 
 
 #### (d) (30) Extend the inverted index of (b), in order to keep the frequency of each word for each document. The new output should be of the form:
 
@@ -293,3 +293,43 @@ Which gives 57 003 unique words present in 1 document only.
 
 which means that the word frequency should follow a single ‘#’ character, which should follow the filename, for each file that contains this word. You are required to use a Combiner.
 
+To tackle this question we will use the class from the previous question as a template and will simply need to change the reduce function. Here we need not only to output an inverse index as in question b, but to augment it with the frequeny of the key for each value. We used the HashMap class to implement this change (see [reference](References.md)).
+The reduce class is as follows: 
+```java
+   public static class Reduce extends Reducer<Text, Text, Text, Text> { // both input and output for both key and value is text
+      @Override
+      public void reduce(Text key, Iterable<Text> values, Context context)
+              throws IOException, InterruptedException {
+    	  
+    	  HashMap<String,Integer> document_list = new HashMap<String,Integer>(); // we create a new hashmap
+    	  	
+    	  	for (Text val : values) {
+    	  		
+    	  		if (document_list.containsKey(val.toString())) {
+    	  			document_list.put(val.toString(), document_list.get(val.toString())+1); // iteratively increase the count 
+    		    }
+    			   
+    	  		else {
+    	  			document_list.put(val.toString(), 1);   // add the document name to the hashmap at the first iteration with value 1
+    	  		}
+    		  }
+    		 
+			context.write(key, new Text(document_list.toString().replace("{", "").replace("}", "").replace("=", "#")));    	  
+         }         
+      }
+```
+
+You can access to the full code for this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/code/Final_Inverted_Index.java) and the final output [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/outputs/Final_Inverted_Index)
+
+The total run time is 1min 3sec. This was run with a combiner, like the previous jobs of this assignment.
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen%20Shot_Final_Inverted_Index_with_Freq.png)
+
+Unfortunately the outfile does not have exactly the correct output since the format is:
+
+| Key  | Value                                     | 
+| ---- |:-----------------------------------------:|
+| this | doc1.txt#21#1, doc2.txt#2#1               |
+| is   | doc1.txt#2#1, doc2.txt#1#1, doc3.txt#10#1 |
+| a    | doc1.txt#100#1                            |
+
+Several attemps were made to counter this issue including the use of Collections. 

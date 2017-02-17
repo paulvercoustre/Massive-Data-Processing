@@ -1,7 +1,5 @@
 package inverted_index_qb;
 
-//import inverted_index.InvertedIndex_QB.Map.Reduce
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;

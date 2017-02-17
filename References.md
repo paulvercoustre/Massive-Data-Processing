@@ -9,3 +9,5 @@ http://stackoverflow.com/questions/22379379/how-to-implement-the-combiner-in-had
 3. Compressing Map output: Hadoop the definitive guide, Tom White, 2007:
 http://javaarm.com/file/apache/Hadoop/books/Hadoop-The.Definitive.Guide_4.edition_a_Tom.White_April-2015.pdf
 
+4. Counters : https://diveintodata.org/2011/03/15/an-example-of-hadoop-mapreduce-counter/
+

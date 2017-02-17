@@ -107,7 +107,7 @@ job.setNumReduceTasks(10);
 job.setNumReduceTasks(50);
 `
 
-We output is composed of 50 seperate files and the run time is signifcantly longer than the previous jobs: 4mins 31sec. Again, this makes sense because we are running on a single machine therefore each reducer has to wait for the previous reducer to be done with it's work before it can start operating. (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_50_reducers.png))
+The output is composed of 50 seperate files and the run time is signifcantly longer than the previous jobs: 4mins 31sec. Again, this makes sense because we are running on a single machine therefore each reducer has to wait for the previous reducer to be done with it's work before it can start operating. (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_50_reducers.png))
 ![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_50_reducers.png)
 
 To obtain a csv file we add `job.getConfiguration().set("mapreduce.output.textoutputformat.separator", ",");` in our class.
@@ -160,7 +160,7 @@ public static class Reduce extends Reducer<Text, Text, Text, Text> { // both inp
 ```
 You can find the full code relative to this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/code/InvertedIndex_QB.java)
 
-In order to excluse the stop words from our inverted index we have 2 options: either we get rid of them in the map phase or we suppress them later on during the reduce phase. Intuitevely it seems that taking care of the stop words in the map phase is better design since we do not carry data we do not want for an extra step. We do this by changing the map class as follows:
+In order to exclude the stop words from our inverted index we have 2 options: either we get rid of them in the map phase or we suppress them later on during the reduce phase. Intuitevely it seems that taking care of the stop words in the map phase is better design since we do not carry data we do not want for an extra step. We do this by changing the map class as follows:
 ```java
 public static class Map extends Mapper<LongWritable, Text, Text, Text> { // the output of the mapper is text for both key & value 
       private Text word = new Text(); // we define the variable corresponding to the key
@@ -198,4 +198,33 @@ The run time of the job is 49 sec. You can find the output [Result Section B](ht
 
 ![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Inverted_Index_Excluding_Stop_Words.png)
 
+#### (c) (10) How many unique words exist in the document corpus (excluding stop words)? Which counter(s) reveal(s) this information? Define your own counter for the number of words appearing in a single document only. What is the value of this counter? Store the final value of this counter on a new file on HDFS.
 
+The number of unique words in the document corpus (excluding stop words)) is easily given by the number of lines contained in the output file we produced in the previous section. We recall the results from the previous job:
+```
+Map-Reduce Framework
+		Map input records=507535
+		Map output records=507535
+		Map output bytes=8319425
+		Map output materialized bytes=335229
+		Input split bytes=402
+		Combine input records=507535
+		Combine output records=88748
+		Reduce input groups=71037
+		Reduce shuffle bytes=335229
+		Reduce input records=88748
+	==>	Reduce output records=71037  <==
+		Spilled Records=177496
+		Shuffled Maps =3
+		Failed Shuffles=0
+		Merged Map outputs=3
+		GC time elapsed (ms)=725
+		CPU time spent (ms)=0
+		Physical memory (bytes) snapshot=0
+		Virtual memory (bytes) snapshot=0
+		Total committed heap usage (bytes)=773603328
+```
+
+The Reduce output records correspond to the number of lines, therefore there are 71 037 unique words in the corpus excluding the stop words. 
+
+To count the number of words that appear in one document only, we

@@ -11,3 +11,5 @@ http://javaarm.com/file/apache/Hadoop/books/Hadoop-The.Definitive.Guide_4.editio
 
 4. Counters : https://diveintodata.org/2011/03/15/an-example-of-hadoop-mapreduce-counter/
 
+5. HashMap: https://www.dotnetperls.com/hashmap-java
+

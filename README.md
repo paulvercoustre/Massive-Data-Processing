@@ -227,4 +227,68 @@ Map-Reduce Framework
 
 The Reduce output records correspond to the number of lines, therefore there are 71 037 unique words in the corpus excluding the stop words. 
 
-To count the number of words that appear in one document only, we
+To count the number of words that appear in one document only is equivalent to counting the number of lines where the size of the value is equal to 1. To do this, we define an enum type and increment it in the reduce class as follows (see [reference list](References.md):
+
+``` java
+   public static class Reduce extends Reducer<Text, Text, Text, Text> { // both input and output for both key and value is text
+      @Override
+      public void reduce(Text key, Iterable<Text> values, Context context)
+              throws IOException, InterruptedException {
+    	  
+    	  HashSet<String> document_list = new HashSet<String>();
+    	  
+    	  for (Text val : values) {
+    		  document_list.add(val.toString());
+    	  }
+    	  if (document_list.size() == 1) {
+			  context.getCounter(SINGLE_DOC_COUNTER.SINGLE_DOCUMENT).increment(1);
+    	  }
+    	  context.write(key, new Text(document_list.toString().replace("[","").replace("]","")));
+         }         
+      }
+```
+
+However this leads to the rather akward and wrong results of 145 781 (i.e more words in one document only than there are unique words...): 
+```
+inverted_index_qb.FullInvertedIndex$SINGLE_DOC_COUNTER
+		SINGLE_DOCUMENT=145781
+```
+
+Alternaively we can include `context.write(key, new Text(document_list.toString().replace("[","").replace("]","")));` in the condition we added and then count the number of lines in the output file. You can find the full code relative to this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/code/Counter_Single_Document.java)
+
+We obtain the following results:
+```
+Map-Reduce Framework
+		Map input records=507535
+		Map output records=507535
+		Map output bytes=8319425
+		Map output materialized bytes=335229
+		Input split bytes=402
+		Combine input records=507535
+		Combine output records=88748
+		Reduce input groups=71037
+		Reduce shuffle bytes=335229
+		Reduce input records=88748
+	==>	Reduce output records=57033   <==
+		Spilled Records=177496
+		Shuffled Maps =3
+		Failed Shuffles=0
+		Merged Map outputs=3
+		GC time elapsed (ms)=753
+		CPU time spent (ms)=0
+		Physical memory (bytes) snapshot=0
+		Virtual memory (bytes) snapshot=0
+		Total committed heap usage (bytes)=773603328
+```
+
+Which gives 57 003 unique words present in 1 document only. 
+
+#### (d) (30) Extend the inverted index of (b), in order to keep the frequency of each word for each document. The new output should be of the form:
+
+| ---- |:----------------------------------:|
+| this | doc1.txt#1, doc2.txt#1             |
+| is   | doc1.txt#2, doc2.txt#1, doc3.txt#1 |
+| a    | doc1.txt#1                         |
+
+which means that the word frequency should follow a single ‘#’ character, which should follow the filename, for each file that contains this word. You are required to use a Combiner.
+

@@ -60,7 +60,7 @@ public class FirstLetterCount extends Configured implements Tool {
         	 if (token.length() < 1){
         		 word.set(token);
         	 } else {
-        		 word.set(token.substring(0,1));
+        		 word.set(token.substring(0,1).toLowerCase());
         	 }            
         	 context.write(word, ONE);
          }

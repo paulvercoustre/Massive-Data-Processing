@@ -80,7 +80,7 @@ public class Inverted_Index_QD extends Configured implements Tool {
       public void map(LongWritable key, Text value, Context context)
               throws IOException, InterruptedException {
     	  
-    	 File File_stop_words = new File("/home/cloudera/workspace/InvertedIndex/stop_words.txt");
+    	 File File_stop_words = new File("/home/cloudera/Desktop/Massive-Data-Processing/Assignment_2/stop_words.txt");
     	 BufferedReader DocumentReader = new BufferedReader(new FileReader(File_stop_words)); // we use BuffferedReader to read our stop words file.  			 
     	 
     	 HashSet<String> excluded_words = new HashSet<String>(); 

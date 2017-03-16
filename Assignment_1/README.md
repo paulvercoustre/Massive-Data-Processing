@@ -73,17 +73,17 @@ Found 11 items
 -rw-r--r--   1 cloudera cloudera         29 2017-02-16 03:04 output_stop_word_10_reducers_no_combiner/part-r-00009
 ```
 
-Looking at the job's logs we see that the total run time is 1min 35sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_10_reducers_no_combiner.jpg)). The complete code for this job is available [here](code/InvertedIndex_10_Reducers_no_Combiner.java)
+Looking at the job's logs we see that the total run time is 1min 35sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_1/img/Screen_Shot_Stop_Words_10_reducers_no_combiner.jpg)). The complete code for this job is available [here](https://github.com/paulvercoustre/Massive-Data-Processing/tree/master/Assignment_1/src/inverted_index)
 
-![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_10_reducers_no_combiner.jpg)
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_1/img/Screen_Shot_Stop_Words_10_reducers_no_combiner.jpg)
 
 #### ii. (10) Run the same program again, this time using a Combiner. Report the execution time. Is there any difference in the execution time, compared to the previous execution? Why?
 
 In order to run the job using a Combiner we simply add `job.setCombinerClass(Reduce.class); // we add a combiner` (see [reference list](References.md)). 
 
-We obtain similar results except this time the run time went down to 1min 19sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_10_reducers.jpg))
+We obtain similar results except this time the run time went down to 1min 19sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_1/img/Screen_Shot_Stop_Words_10_reducers.jpg))
 
-![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_10_reducers.jpg)
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_1/img/Screen_Shot_Stop_Words_10_reducers.jpg)
 
 This makes sense because instead of passing all the key-value pairs from the mapper to the reducer, the Combiner ensures that key-value pairs with the same key are grouped. This reduces the amount of data passed on to the reduce step.
 
@@ -95,9 +95,9 @@ conf.setBoolean(Job.MAP_OUTPUT_COMPRESS, true); // we compress the map output us
       conf.setClass(Job.MAP_OUTPUT_COMPRESS_CODEC, BZip2Codec.class,
 ```
 
-We obtain similar results and the run time is almost the same : 1 min  18sec. The fact that compression does not seem to have a significant impact may be due to the relatively small size of the data we are working with. When scaling up, the impact of compression is usually blatant. (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_10_reducers_map_compression.jpg))
+We obtain similar results and the run time is almost the same : 1 min  18sec. The fact that compression does not seem to have a significant impact may be due to the relatively small size of the data we are working with. When scaling up, the impact of compression is usually blatant. (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_1/img/Screen_Shot_Stop_Words_10_reducers_map_compression.jpg))
 
-![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_10_reducers_map_compression.jpg)
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_1/img/Screen_Shot_Stop_Words_10_reducers_map_compression.jpg)
 
 #### iv. (5) Run the same program again, this time using 50 reducers. Report the execution time. Is there any difference in the execution time, compared to the previous execution? Why?
 
@@ -107,12 +107,12 @@ job.setNumReduceTasks(10);
 job.setNumReduceTasks(50);
 `
 
-The output is composed of 50 seperate files and the run time is signifcantly longer than the previous jobs: 4mins 31sec. Again, this makes sense because we are running on a single machine therefore each reducer has to wait for the previous reducer to be done with it's work before it can start operating. (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_50_reducers.png))
-![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Stop_Words_50_reducers.png)
+The output is composed of 50 seperate files and the run time is signifcantly longer than the previous jobs: 4mins 31sec. Again, this makes sense because we are running on a single machine therefore each reducer has to wait for the previous reducer to be done with it's work before it can start operating. (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_1/img/Screen_Shot_Stop_Words_50_reducers.png))
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_1/img/Screen_Shot_Stop_Words_50_reducers.png)
 
 To obtain a csv file we add `job.getConfiguration().set("mapreduce.output.textoutputformat.separator", ",");` in our class.
 
-See here for our final result: [Result Section A](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/outputs/part-r-00000)
+See here for our final result: [Result Section A](https://github.com/paulvercoustre/Massive-Data-Processing/tree/master/Assignment_1/outputs)
 
 #### (b) (30) Implement a simple inverted index for the given document corpus, as shown in the previous Table, skipping the words of stopwords.csv.
 
@@ -158,7 +158,7 @@ public static class Reduce extends Reducer<Text, Text, Text, Text> { // both inp
          
       }
 ```
-You can find the full code relative to this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/code/InvertedIndex_QB.java)
+You can find the full code relative to this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/tree/master/Assignment_1/src/inverted_index)
 
 In order to exclude the stop words from our inverted index we have 2 options: either we get rid of them in the map phase or we suppress them later on during the reduce phase. Intuitevely it seems that taking care of the stop words in the map phase is better design since we do not carry data we do not want for an extra step. We do this by changing the map class as follows:
 ```java
@@ -192,11 +192,11 @@ public static class Map extends Mapper<LongWritable, Text, Text, Text> { // the 
       }
   }
 ```
-You can find the full code relative to this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/code/Full_InvertedIndex_QB.java)
+You can find the full code relative to this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/tree/master/Assignment_1/src/inverted_index)
 
-The run time of the job is 49 sec. You can find the output [Result Section B](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/outputs/Inverted_Index_QB)
+The run time of the job is 49 sec. You can find the output [Result Section B](https://github.com/paulvercoustre/Massive-Data-Processing/tree/master/Assignment_1/outputs)
 
-![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen_Shot_Inverted_Index_Excluding_Stop_Words.png)
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_1/img/Screen_Shot_Inverted_Index_Excluding_Stop_Words.png)
 
 #### (c) (10) How many unique words exist in the document corpus (excluding stop words)? Which counter(s) reveal(s) this information? Define your own counter for the number of words appearing in a single document only. What is the value of this counter? Store the final value of this counter on a new file on HDFS.
 
@@ -254,7 +254,7 @@ inverted_index_qb.FullInvertedIndex$SINGLE_DOC_COUNTER
 		SINGLE_DOCUMENT=145781
 ```
 
-Alternaively we can include `context.write(key, new Text(document_list.toString().replace("[","").replace("]","")));` in the condition we added and then count the number of lines in the output file. You can find the full code relative to this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/code/Counter_Single_Document.java)
+Alternaively we can include `context.write(key, new Text(document_list.toString().replace("[","").replace("]","")));` in the condition we added and then count the number of lines in the output file. You can find the full code relative to this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/tree/master/Assignment_1/src/inverted_index)
 
 We obtain the following results:
 ```
@@ -319,10 +319,10 @@ The reduce class is as follows:
       }
 ```
 
-You can access to the full code for this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/code/Final_Inverted_Index.java) and the final output [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/outputs/Final_Inverted_Index)
+You can access to the full code for this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/tree/master/Assignment_1/src/inverted_index) and the final output [here](https://github.com/paulvercoustre/Massive-Data-Processing/tree/master/Assignment_1/outputs)
 
 The total run time is 1min 3sec. This was run with a combiner, like the previous jobs of this assignment.
-![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/images/Screen%20Shot_Final_Inverted_Index_with_Freq.png)
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_1/img/Screen%20Shot_Final_Inverted_Index_with_Freq.png)
 
 Unfortunately the outfile does not have exactly the correct output since the format is:
 

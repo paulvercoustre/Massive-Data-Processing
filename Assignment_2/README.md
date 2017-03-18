@@ -70,8 +70,9 @@ public static class Map extends Mapper<LongWritable, Text, LongWritable, Text> {
       }
    }
 }
-```   
-   
+```  
+
+   
 #### (b)(1) Store on HDFS the number of output records (i.e., total lines).
 
 

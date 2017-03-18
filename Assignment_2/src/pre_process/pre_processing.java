@@ -183,7 +183,7 @@ public class pre_processing extends Configured implements Tool {
       
       protected void cleanup(Context context) throws IOException, InterruptedException {
     	  try{
-    		 Path path = new Path("nb_lines.txt");
+    		 Path path = new Path("number_lines/nb_lines.txt");
     		 FileSystem file_out = FileSystem.get(new Configuration());
     		 BufferedWriter DocumentWriter = new BufferedWriter(new OutputStreamWriter(file_out.create(path,true)));
     		 Long nb_line = context.getCounter(FINAL_COUNTER.FINAL_LINE).getValue();

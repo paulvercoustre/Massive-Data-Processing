@@ -127,7 +127,8 @@ public static class Reduce extends Reducer<LongWritable, Text, LongWritable, Tex
         	 final_sentence += token+";";        
          }
          final_sentence = final_sentence.substring(0, final_sentence.length()-1);  // get rid of the last semi-colon for next task...
-         context.write(key, new Text(final_sentence));  
+         context.write(key, new Text(final_sentence));
+	 context.getCounter(FINAL_COUNTER.FINAL_LINE).increment(1);
 ```
 
 You can find the full code for this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/src/pre_process/pre_processing.java).

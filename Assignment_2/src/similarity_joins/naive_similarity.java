@@ -1,17 +1,20 @@
 package similarity_joins;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
@@ -20,13 +23,11 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
-import org.apache.hadoop.io.compress.BZip2Codec;
-import org.apache.hadoop.io.compress.CompressionCodec;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.FileSplit;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
@@ -45,22 +46,17 @@ public class naive_similarity extends Configured implements Tool {
    public int run(String[] args) throws Exception {
       System.out.println(Arrays.toString(args));
       Configuration conf = new Configuration();
-      conf.setBoolean(Job.MAP_OUTPUT_COMPRESS, true); 
-      conf.setClass(Job.MAP_OUTPUT_COMPRESS_CODEC, BZip2Codec.class, // we compress the map output using BZip2Codec
-      CompressionCodec.class);
       Job job = new Job(conf);
       job.setJarByClass(naive_similarity.class);
-      job.setOutputKeyClass(Text.class); // setting the output key to text
-      job.setOutputValueClass(Text.class); // setting the output value to text
+      job.setOutputKeyClass(Text.class);
+      job.setOutputValueClass(Text.class);
 
       job.setMapperClass(Map.class);
       job.setReducerClass(Reduce.class);
-      job.setNumReduceTasks(1); // we set the number of reducers to 1
-      //job.setCombinerClass(Reduce.class); // we add a combiner
       
-      job.getConfiguration().set("mapreduce.output.textoutputformat.separator", " => "); // getting a clearer separator
+      job.getConfiguration().set("mapreduce.output.textoutputformat.separator", ","); // getting a csv formatted output
 
-      job.setInputFormatClass(TextInputFormat.class);
+      job.setInputFormatClass(TextInputFormat.class); // each line is considered a separate file
       job.setOutputFormatClass(TextOutputFormat.class);   
 
       FileInputFormat.addInputPath(job, new Path(args[0]));
@@ -68,88 +64,86 @@ public class naive_similarity extends Configured implements Tool {
       
       FileSystem file_out = FileSystem.newInstance(getConf()); 
 
-		if (file_out.exists(new Path(args[1]))) {      // check of there already is an output file
+		if (file_out.exists(new Path(args[1]))) {      // check if there already is an output file
 			file_out.delete(new Path(args[1]), true);  // if yes deletes it automatically to avoid manual deletion... 
 		}
-
+      
       job.waitForCompletion(true);
       
       return 0;
    }
    
-   public static class Map extends Mapper<LongWritable, Text, Text, Text> { // the output of the mapper is text for both key & value 
-      private Text word = new Text(); // we define the variable corresponding to the output key
-      private Text file_membership = new Text(); // we define the variable corresponding to the output value
-      private Set<String> excluded_words;
+   public static class Map extends Mapper<LongWritable, Text, Text, Text> {
+	  public Integer number_lines = 0;
       
-      @Override
+      /*
+       * We use the setup method in order to open the file containing the number of lines 
+       * and spill its content only once.
+       */
+	  @Override
       public void setup(Context context) throws IOException, InterruptedException {
-     	 File File_stop_words = new File("/home/cloudera/Desktop/Massive-Data-Processing/Assignment_2/stop_words.txt");
-     	 BufferedReader DocumentReader = new BufferedReader(new FileReader(File_stop_words)); // we use BuffferedReader to read our stop words file.  			 
+     	 File File_nb_lines = new File("/home/cloudera/Desktop/Massive-Data-Processing/Assignment_2/nb_lines.txt");
+     	 BufferedReader DocumentReader = new BufferedReader(new FileReader(File_nb_lines)); // we use BuffferedReader to read our stop words file.  			 
      	 
-     	 // words present in the stop words file are added in a list that cannot contain duplicates
-     	 excluded_words = new HashSet<String>(); 
+     	 // we assign the value in the document to an integer variable     
      	 String case_ = null;
      	 while ((case_ = DocumentReader.readLine()) != null) { 
-     		 excluded_words.add(case_.toLowerCase());
-     		 System.out.println(case_);    	 
+     		 number_lines = Integer.parseInt(case_);	     	 
      	 }
      	 DocumentReader.close();  
       }
-
+      
+      /*
+       * The map function takes as input a line of the document
+       * It parses it, taking the line number and sentence separately 
+       * It outputs all key combinations (given the number of lines) and the sentence as value 
+       */
       @Override
       public void map(LongWritable key, Text value, Context context)
               throws IOException, InterruptedException {
     	  
-    	 // System.out.println(key);
+    	 Integer key_1 = Integer.parseInt(value.toString().split(",")[0]); // item before comma is the key 
+    	 Text sentence = new Text(value.toString().split(",")[1]);         // item after comma is the sentence
     	 
-    	 String file_name = ((FileSplit) context.getInputSplit())
-    			 .getPath().getName(); // we get the document name associated to the key...
-         file_membership = new Text(file_name); // ... and store it in a text variable
-         
-         for (String token: value.toString().replaceAll("[^A-Za-z0-9]"," ").split("\\s+")) { // keep text and numbers only
-            if (!excluded_words.contains(token.toLowerCase(Locale.ENGLISH))) { // we check that the word is not a stop word
-            	word.set(token.toLowerCase());
-            	// System.out.println(word + " : " + file_membership );
-            }
-            context.write(word, file_membership); // output in the inverted index format
-         }	
-         // System.out.println("End of Task");
+    	 for (Integer key_2 = 1; key_2 < number_lines + 1; key_2++) {  // we get all possible combinations of lines
+    		 if (key_2 != key_1){  // we don't want to compute the similarity of a line with itself...                
+    			 Integer max_key = Math.max(key_1, key_2);
+    			 Integer min_key = Math.min(key_1, key_2);
+    			 // we order the keys so as not to get duplicates
+    			 // we will get both sentences for each key combination in the reducer
+    			 Text combination = new Text(min_key.toString() + "," + max_key.toString());
+    			 context.write(combination, sentence);
+    		 }    		 
+    	 }
       }
-  }
-
-   public static class Reduce extends Reducer<Text, Text, Text, Text> { // both input and output for both key and value is text
-	  
-	  @Override
+   }         
+   
+   public static class Reduce extends Reducer<Text, Text, Text, Text> {
+	   
+	  /*
+	   * The reduce class computes the Jaccard similarity between sentences
+	   * The input keys are tuples (key_1, key_2)
+	   * Each input key has 2 values: the 2 sentences for which we want to compute similarity
+	   * It outputs the 2 sentences as key and the similarity score (if sim(key_1, key_2) > 0.8) as value
+	   */ 
+      @Override
       public void reduce(Text key, Iterable<Text> values, Context context)
               throws IOException, InterruptedException {
-		  
-		  	// System.out.println(key);
-    	  
-    	  	HashMap<String,Integer> document_list = new HashMap<String,Integer>(); // we create a new hashmap
-    	  	
-    	  	for (Text val : values) {
-    	  		// System.out.println(val);
-    	  		
-    	  		if (document_list.containsKey(val.toString())) {
-    	  			document_list.put(val.toString(), document_list.get(val.toString())+1); // iteratively increase the count 
-    	  			// System.out.println(document_list);
-    	  			// System.out.println(document_list.toString());
-    	  		}
-    			   
-    	  		else {
-    	  			document_list.put(val.toString(), 1);   // add the document name to the hashmap at the first iteration with value 1
-    	  		}
-    		  }
-    		 
-			context.write(key, new Text(document_list.toString().replace("{", "").replace("}", "").replace("=", "#")));
-			// System.out.println(key +" : "+ document_list.toString() );
-         }
-      
-   }
-   public static class Combine extends Reducer <Text, Text, Text, Text> {
-	   
+    	 
+    	 HashSet<String> unique_words = new HashSet<String>();  // we store words in a list with no duplicates
+    	 List<String> union = new ArrayList<String>();    	    // we store all the words from both sentences
+    	 float jaccard_sim = 0;
+    	 
+         for (Text val : values) {                              // for both sentences
+        	 for (String token : val.toString().split(";")){    // parse the sentence
+        		 unique_words.add(token);         				// add words to HashSet
+        		 union.add(token);								// add words to List
+        	 }        	 
+         }         
+         jaccard_sim = (union.size() - unique_words.size()) / (union.size());  // compute the Jaccard similarity
+         if (jaccard_sim > 0.8){											
+        	 context.write(key, new Text(Float.toString(jaccard_sim))); 
+         } 
+      }      
    }
 }
-  
- 

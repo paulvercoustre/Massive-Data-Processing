@@ -69,7 +69,8 @@ public static class Map extends Mapper<LongWritable, Text, LongWritable, Text> {
     	 }	 
       }
    }
-   ```   
+}
+```   
    
 #### (b)(1) Store on HDFS the number of output records (i.e., total lines).
 
@@ -120,7 +121,8 @@ public static class Reduce extends Reducer<LongWritable, Text, LongWritable, Tex
          context.write(key, new Text(final_sentence));  
       }
    }
-   ```   
+}   
+```   
 
 You can find the full code for this job [here]().
 

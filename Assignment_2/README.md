@@ -64,12 +64,7 @@ public static class Map extends Mapper<LongWritable, Text, LongWritable, Text> {
     			 
     			 if (!u_word.isEmpty()){
     				 context.write(unique_key, new Text(u_word));
-    			 }	          
-    		 }
-    	 }	 
-      }
-   }
-}
+
 ```  
 
    

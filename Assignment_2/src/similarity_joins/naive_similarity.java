@@ -1,4 +1,4 @@
-package inverted_index;
+package similarity_joins;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -33,10 +33,10 @@ import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.Tool;
 import org.apache.hadoop.util.ToolRunner;
 
-public class Inverted_Index_QD extends Configured implements Tool {
+public class naive_similarity extends Configured implements Tool {
    public static void main(String[] args) throws Exception {
       System.out.println(Arrays.toString(args));
-      int res = ToolRunner.run(new Configuration(), new Inverted_Index_QD(), args);
+      int res = ToolRunner.run(new Configuration(), new naive_similarity(), args);
       
       System.exit(res);
    }
@@ -49,7 +49,7 @@ public class Inverted_Index_QD extends Configured implements Tool {
       conf.setClass(Job.MAP_OUTPUT_COMPRESS_CODEC, BZip2Codec.class, // we compress the map output using BZip2Codec
       CompressionCodec.class);
       Job job = new Job(conf);
-      job.setJarByClass(Inverted_Index_QD.class);
+      job.setJarByClass(naive_similarity.class);
       job.setOutputKeyClass(Text.class); // setting the output key to text
       job.setOutputValueClass(Text.class); // setting the output value to text
 

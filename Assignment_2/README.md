@@ -68,7 +68,21 @@ public static class Map extends Mapper<LongWritable, Text, LongWritable, Text> {
 ```
 
 #### (b)(1) Store on HDFS the number of output records (i.e., total lines).
-
+We use a counter in the reducer whose value is then stored in a text file. To do this we implement a cleanup method at the end of the reduce phase:
+```java
+protected void cleanup(Context context) throws IOException, InterruptedException {
+    	  try{
+    		 Path path = new Path("number_lines/nb_lines.txt");
+    		 FileSystem file_out = FileSystem.get(new Configuration());
+    		 BufferedWriter DocumentWriter = new BufferedWriter(new OutputStreamWriter(file_out.create(path,true)));
+    		 Long nb_line = context.getCounter(FINAL_COUNTER.FINAL_LINE).getValue();
+    		 System.out.println(nb_line);
+    		 DocumentWriter.write(nb_line.toString() + "\n");
+    		 DocumentWriter.close();
+    	  }
+    	  catch(Exception exception){
+	            System.out.println("Line Counter Failed");
+```
 
 #### (c)(7) Order the tokens of each line in ascending order of global frequency.
 

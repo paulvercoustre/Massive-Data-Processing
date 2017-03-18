@@ -115,10 +115,7 @@ public static class Reduce extends Reducer<LongWritable, Text, LongWritable, Tex
          }
          final_sentence = final_sentence.substring(0, final_sentence.length()-1);  // get rid of the last semi-colon for next task...
          context.write(key, new Text(final_sentence));  
-      }
-   }
-}   
-```   
+```
 
 You can find the full code for this job [here]().
 

@@ -164,8 +164,50 @@ Input: d1: “I have a dog” d2: “I have a cat” d3: “I have a big dog”
 - sim(d1, d3) = 4/5 = 0.8 -> d1 and d3 are similar
 Output: (d1, d3), 0.8
 
-#### (a)(40) (40) Perform all pair-wise comparisons between documents, using the following technique: Each document is handled by a single mapper (remember that lines are used to represent documents in this assignment). The map method should emit, for each document, the document id along with one other document id as a key (one such pair for each other document in the corpus) and the document’s content as a value. In the reduce phase, perform the Jaccard computations for all/some selected pairs. Output only similar pairs on HDFS, in TextOutputFormat. Make sure that the same pair of documents is compared no more than once. Report the execution time and the number of performed comparisons.
+#### (a)(40) Perform all pair-wise comparisons between documents, using the following technique: Each document is handled by a single mapper (remember that lines are used to represent documents in this assignment). The map method should emit, for each document, the document id along with one other document id as a key (one such pair for each other document in the corpus) and the document’s content as a value. In the reduce phase, perform the Jaccard computations for all/some selected pairs. Output only similar pairs on HDFS, in TextOutputFormat. Make sure that the same pair of documents is compared no more than once. Report the execution time and the number of performed comparisons.
 
-To implement this job we take our pre-processed file as input as well as the text file containing the number of lines in the document (via the setup method). Since there are 115105 lines in the original pre-processed file, we will work with a smaller version containing 50 lines to ease computation.
+To implement this job we take our pre-processed file as input as well as the text file containing the number of lines in the document (via the setup method). Since there are 115105 lines in the original pre-processed file, we will work with a smaller version containing 1000 lines to ease computation.
 
 We implement the following mapper:
+```java 
+public static class Map extends Mapper<LongWritable, Text, Text, Text> {
+	  public Integer number_lines = 0;
+      
+      /*
+       * We use the setup method in order to open the file containing the number of lines 
+       * and spill its content only once.
+       */
+	  @Override
+      public void setup(Context context) throws IOException, InterruptedException {
+     	 File File_nb_lines = new File("/home/cloudera/Desktop/Massive-Data-Processing/Assignment_2/nb_lines.txt");
+     	 BufferedReader DocumentReader = new BufferedReader(new FileReader(File_nb_lines)); // we use BuffferedReader to read our stop words file.  			 
+     	 
+     	 // we assign the value in the document to an integer variable     
+     	 String case_ = null;
+     	 while ((case_ = DocumentReader.readLine()) != null) { 
+     		 number_lines = Integer.parseInt(case_);	     	 
+     	 }
+     	 DocumentReader.close();  
+      }
+      
+      /*
+       * The map function takes as input a line of the document
+       * It parses it, taking the line number and sentence separately 
+       * It outputs all key combinations (given the number of lines) and the sentence as value 
+       */
+      @Override
+      public void map(LongWritable key, Text value, Context context)
+              throws IOException, InterruptedException {
+    	  
+    	 Integer key_1 = Integer.parseInt(value.toString().split(",")[0]); // item before comma is the key 
+    	 Text sentence = new Text(value.toString().split(",")[1]);         // item after comma is the sentence
+    	 
+    	 for (Integer key_2 = 1; key_2 < number_lines + 1; key_2++) {  // we get all possible combinations of lines
+    		 if (key_2 != key_1){  // we don't want to compute the similarity of a line with itself...                
+    			 Integer max_key = Math.max(key_1, key_2);
+    			 Integer min_key = Math.min(key_1, key_2);
+    			 // we order the keys so as not to get duplicates
+    			 // we will get both sentences for each key combination in the reducer
+    			 Text combination = new Text(min_key.toString() + "," + max_key.toString());
+    			 context.write(combination, sentence);
+```

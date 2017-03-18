@@ -156,11 +156,12 @@ You are asked to efficiently identify all pairs of documents (d1, d2) that are s
 - documents are represented as sets of words,
 - sim(d1, d2) = Jaccard(d1, d2) = |d1 Ո d2| / |d1 U d2|,
 - t = 0.8.
+
 Example:
 Input: d1: “I have a dog” d2: “I have a cat” d3: “I have a big dog”
-sim(d1, d2) = 3/5 < 0.8 -> d1 and d2 are not similar 
-sim(d2, d3) = 3/6 < 0.8 -> d2 and d3 are not similar 
-sim(d1, d3) = 4/5 = 0.8 -> d1 and d3 are similar
+- sim(d1, d2) = 3/5 < 0.8 -> d1 and d2 are not similar 
+- sim(d2, d3) = 3/6 < 0.8 -> d2 and d3 are not similar 
+- sim(d1, d3) = 4/5 = 0.8 -> d1 and d3 are similar
 Output: (d1, d3), 0.8
 
 #### (a)(40) (40) Perform all pair-wise comparisons between documents, using the following technique: Each document is handled by a single mapper (remember that lines are used to represent documents in this assignment). The map method should emit, for each document, the document id along with one other document id as a key (one such pair for each other document in the corpus) and the document’s content as a value. In the reduce phase, perform the Jaccard computations for all/some selected pairs. Output only similar pairs on HDFS, in TextOutputFormat. Make sure that the same pair of documents is compared no more than once. Report the execution time and the number of performed comparisons.

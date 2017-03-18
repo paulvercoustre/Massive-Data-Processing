@@ -15,6 +15,7 @@ To ensure we don't keep empty lines we simply add the condition `if (!value.toSt
 All of these steps are included in the mapper function of the job.
 
 ```java
+
 public static class Map extends Mapper<LongWritable, Text, LongWritable, Text> {
       public Set<String> excluded_words;
       public Set<String> unique_words;
@@ -65,8 +66,10 @@ public static class Map extends Mapper<LongWritable, Text, LongWritable, Text> {
     			 if (!u_word.isEmpty()){
     				 context.write(unique_key, new Text(u_word));
 
-```  
+``` 
+```
 
+```
    
 #### (b)(1) Store on HDFS the number of output records (i.e., total lines).
 

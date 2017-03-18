@@ -7,7 +7,7 @@ In this assignment, you will use the document corpus of pg100.txt (from http://w
 #### (a)(2) Remove all stopwords (you can use the stopwords file of your previous assignment), special characters (keep only [a-z],[A-Z] and [0-9]) and keep each unique word only once per line. Don’t keep empty lines.
 
 We start by creating a new project, package and class similarly to what was done in assignment 0 & 1.
-To find the stopwords in pg100.txt we run the same "stopwords" job from the previous assignment on this particular text only. We obtain [this file]().
+To find the stopwords in pg100.txt we run the same "stopwords" job from the previous assignment on this particular text only. We obtain [this file](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/stopwords/part-r-00000).
 
 To remove special characters we apply `replaceAll("[^A-Za-z0-9]"," ")` to the input values of the map function.
 To ensure we don't keep empty lines we simply add the condition `if (!value.toString().replaceAll("[^A-Za-z0-9]"," ").isEmpty())`. Note that we do not transform the input to lower case as it was not required.
@@ -70,10 +70,10 @@ public static class Map extends Mapper<LongWritable, Text, LongWritable, Text> {
 #### (b)(1) Store on HDFS the number of output records (i.e., total lines).
 
 
-#### (c) (7) Order the tokens of each line in ascending order of global frequency.
+#### (c)(7) Order the tokens of each line in ascending order of global frequency.
 
-To get the global frequency of each word in the text we use the wordcount job from assignemnt 0 (available [here]()) which we compute on pg100.txt.
-We import it in the reduce method and use it to order the words of each sentence as required. 
+To get the global frequency of each word in the text we use the wordcount job from assignemnt 0 (available [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/src/pre_process/word_frequency.java)) which we compute on pg100.txt.
+We import it in the reduce method and use it to order the words of each sentence as required with a TreeMap. 
 ```java
 public static class Reduce extends Reducer<LongWritable, Text, LongWritable, Text> {
 	  private HashMap<String, Integer> word_frequency = new HashMap<String,Integer>();  // the words and their frequency is spilled in a dictionary-like data structure
@@ -116,9 +116,10 @@ public static class Reduce extends Reducer<LongWritable, Text, LongWritable, Tex
          context.write(key, new Text(final_sentence));  
 ```
 
-You can find the full code for this job [here]().
+You can find the full code for this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/src/pre_process/pre_processing.java).
 
-Looking at the job's logs we see that the total run time is 1min 35sec (see [Job Tracker]()).
+Looking at the job's logs we see that the total run time is 32sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/img/Screen%20Shot%202017-03-18%20at%2006.09.35.png)).
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/img/Screen%20Shot%202017-03-18%20at%2006.09.35.png)
 
 The resulting output looks like this:
 ```

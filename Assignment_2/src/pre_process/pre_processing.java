@@ -1,9 +1,11 @@
 package pre_process;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,7 +45,10 @@ public class pre_processing extends Configured implements Tool {
    public static enum LINE_COUNTER {   // we define an enum type that will count the number of lines
 	   SINGLE_LINE
    }
-
+   public static enum FINAL_COUNTER {   // we define an enum type that will count the number of lines
+	   FINAL_LINE
+   }	   
+   
    @Override
    public int run(String[] args) throws Exception {
       System.out.println(Arrays.toString(args));
@@ -168,7 +173,27 @@ public class pre_processing extends Configured implements Tool {
         	 final_sentence += token+";";        
          }
          final_sentence = final_sentence.substring(0, final_sentence.length()-1);  // get rid of the last semi-colon for next task...
-         context.write(key, new Text(final_sentence));  
+         context.write(key, new Text(final_sentence)); 
+         context.getCounter(FINAL_COUNTER.FINAL_LINE).increment(1);
+      }
+      
+      /*
+       * The cleanup method stores the value of the OUTPUT_LINE counter as required
+       */
+      
+      protected void cleanup(Context context) throws IOException, InterruptedException {
+    	  try{
+    		 Path path = new Path("nb_lines.txt");
+    		 FileSystem file_out = FileSystem.get(new Configuration());
+    		 BufferedWriter DocumentWriter = new BufferedWriter(new OutputStreamWriter(file_out.create(path,true)));
+    		 Long nb_line = context.getCounter(FINAL_COUNTER.FINAL_LINE).getValue();
+    		 System.out.println(nb_line);
+    		 DocumentWriter.write(nb_line.toString() + "\n");
+    		 DocumentWriter.close();
+    	  }
+    	  catch(Exception exception){
+	            System.out.println("Line Counter Failed");
+       	  }
       }
    }
 }

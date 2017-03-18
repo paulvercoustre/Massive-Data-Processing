@@ -84,6 +84,8 @@ protected void cleanup(Context context) throws IOException, InterruptedException
 	            System.out.println("Line Counter Failed");
 ```
 
+There are 115105 lines in the pre-processed file
+
 #### (c)(7) Order the tokens of each line in ascending order of global frequency.
 
 To get the global frequency of each word in the text we use the wordcount job from assignemnt 0 (available [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/src/pre_process/word_frequency.java)) which we compute on pg100.txt.
@@ -149,3 +151,20 @@ The resulting output looks like this:
 
 ## Set-similarity joins
 
+You are asked to efficiently identify all pairs of documents (d1, d2) that are similar (sim(d1, d2) >= t), given a similarity function sim and a similarity threshold t. Specifically, assume that:
+- each output line of the pre-processing job is a unique document (line number is the document id),
+- documents are represented as sets of words,
+- sim(d1, d2) = Jaccard(d1, d2) = |d1 Ո d2| / |d1 U d2|,
+- t = 0.8.
+Example:
+Input: d1: “I have a dog” d2: “I have a cat” d3: “I have a big dog”
+sim(d1, d2) = 3/5 < 0.8 -> d1 and d2 are not similar 
+sim(d2, d3) = 3/6 < 0.8 -> d2 and d3 are not similar 
+sim(d1, d3) = 4/5 = 0.8 -> d1 and d3 are similar
+Output: (d1, d3), 0.8
+
+#### (a)(40) (40) Perform all pair-wise comparisons between documents, using the following technique: Each document is handled by a single mapper (remember that lines are used to represent documents in this assignment). The map method should emit, for each document, the document id along with one other document id as a key (one such pair for each other document in the corpus) and the document’s content as a value. In the reduce phase, perform the Jaccard computations for all/some selected pairs. Output only similar pairs on HDFS, in TextOutputFormat. Make sure that the same pair of documents is compared no more than once. Report the execution time and the number of performed comparisons.
+
+To implement this job we take our pre-processed file as input as well as the text file containing the number of lines in the document (via the setup method). Since there are 115105 lines in the original pre-processed file, we will work with a smaller version containing 50 lines to ease computation.
+
+We implement the following mapper:

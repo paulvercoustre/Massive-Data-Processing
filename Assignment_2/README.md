@@ -65,11 +65,8 @@ public static class Map extends Mapper<LongWritable, Text, LongWritable, Text> {
     			 
     			 if (!u_word.isEmpty()){
     				 context.write(unique_key, new Text(u_word));
-
-``` 
 ```
 
-```
    
 #### (b)(1) Store on HDFS the number of output records (i.e., total lines).
 

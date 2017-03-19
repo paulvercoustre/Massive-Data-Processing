@@ -379,8 +379,8 @@ We lauch the job on the same sample file as previously, with the same similarity
 
 The full code for this job is available [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/src/similarity_joins/inverted_index_similarity.java).
 
-Looking at the job's logs we see that the total run time is 30sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/tree/master/Assignment_2/img)).
-![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/tree/master/Assignment_2/img)
+Looking at the job's logs we see that the total run time is 30sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/img/Screen%20Shot%202017-03-19%20at%2020.50.04.png)).
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/img/Screen%20Shot%202017-03-19%20at%2020.50.04.png)
 
 
 #### c) (10) Explain and justify the difference between a) and b) in the number of performed comparisons, as well as their difference in execution time.

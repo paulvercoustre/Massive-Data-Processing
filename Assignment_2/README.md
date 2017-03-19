@@ -212,3 +212,59 @@ public static class Map extends Mapper<LongWritable, Text, Text, Text> {
     			 context.write(combination, sentence);
 ```
 
+The mapper outputs, for each input value (i.e. sentence) all the possible combinations of comparisons as keys (line numbers) and the sentence as value. The line numbers are always written in ascending order so as to facilitate computation in the reduce step. 
+
+We implement the following reduce method: 
+```java
+   public static class Reduce extends Reducer<Text, Text, Text, Text> {
+	  public static Integer numberOfComparisons = 0;
+	  /*
+	   * The reduce class computes the Jaccard similarity between sentences
+	   * The input keys are tuples (key_1, key_2)
+	   * Each input key has 2 values: the 2 sentences for which we want to compute similarity
+	   * It outputs the 2 sentences as key and the similarity score (if sim(key_1, key_2) > 0.8) as value
+	   */ 
+      @Override
+      public void reduce(Text key, Iterable<Text> values, Context context)
+              throws IOException, InterruptedException {
+    	 
+    	 HashSet<String> unique_words = new HashSet<String>();  // we store words in a list with no duplicates
+    	 List<String> union = new ArrayList<String>();    	    // we store all the words from both sentences
+    	 float jaccard_sim = 0;
+    	 
+         for (Text val : values) {                              // for both sentences
+        	 for (String token : val.toString().split(";")){    // parse the sentence
+        		 unique_words.add(token);         				// add words to HashSet
+        		 union.add(token);								// add words to List
+        	 }        	 
+         }        
+         jaccard_sim = ((float) union.size() - unique_words.size()) / ((float)union.size());  // compute the Jaccard similarity
+         numberOfComparisons += 1;
+         
+         if (jaccard_sim > 0.25){  // we use 0.25 as the cutoff point because otherwise no pairs come up 								
+        	 context.write(key, new Text(" similarity : " + Float.toString(jaccard_sim)));
+```
+
+When we perform all of the above steps on the sample input file (1000 lines), the resulting pre-processed file has 855 lines, and when computing the Jaccard similarities, 365813 comparisons are made. Note that we deliberately lowered the similarity cutoff point to 0.25 because otherwise no pair would get written on the output file.
+
+The full code for this job is available [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/src/similarity_joins/naive_similarity.java).
+
+Looking at the job's logs we see that the total run time is 28sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/img/Screen%20Shot%202017-03-19%20at%2001.51.01.png)).
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/img/Screen%20Shot%202017-03-19%20at%2001.51.01.png)
+
+The resulting output looks like this:
+``` 
+[cloudera@quickstart Jar_Files]$ hadoop fs -cat output/part* | head
+1,31, similarity : 0.31578946
+1,9, similarity : 0.3529412
+10,132, similarity : 0.33333334
+14,122, similarity : 0.33333334
+14,22, similarity : 0.33333334
+14,38, similarity : 0.33333334
+15,17, similarity : 0.2631579
+2,10, similarity : 0.4
+2,132, similarity : 0.4
+2,20, similarity : 0.33333334
+```
+
+#### b) (40) Create an inverted index, only for the first |d| - ⌈t |d|⌉ + 1 words of each document d (remember that they are stored in ascending order of frequency). In your reducer, compute the similarity of the document pairs. Output only similar pairs on HDFS, in TextOutputFormat. Report the execution time and the number of performed comparisons.

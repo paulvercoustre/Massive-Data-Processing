@@ -268,3 +268,120 @@ The resulting output looks like this:
 ```
 
 #### b) (40) Create an inverted index, only for the first |d| - ⌈t |d|⌉ + 1 words of each document d (remember that they are stored in ascending order of frequency). In your reducer, compute the similarity of the document pairs. Output only similar pairs on HDFS, in TextOutputFormat. Report the execution time and the number of performed comparisons.
+
+The intuition here is that we only want to compute similarity between documents if they have words in common to gain time.
+
+The mapping method takes as input the pre-processed file and output an inverted index of the words in that file. Specifically we implement this mapper:
+```java
+public static class Map extends Mapper<LongWritable, Text, Text, Text> {
+           
+      /*
+       * The map function takes as input a line of the document
+       * It parses it, taking the line number and sentence separately 
+       * It outputs all key, value pairs in the inverted index format 
+       */
+      @Override
+      public void map(LongWritable key, Text value, Context context)
+              throws IOException, InterruptedException {
+    	  
+    	 Integer key_1 = Integer.parseInt(value.toString().split(",")[0]); // item before comma is the key 
+    	 Text sentence = new Text(value.toString().split(",")[1]);         // item after comma is the sentence
+    	 
+    	 Integer d = sentence.toString().split(";").length;                // number of words in the sentence (d)
+    	 float t = (float) 0.25;										   // similarity threshold (t)
+    	 
+    	 Integer cutoff = d - Math.round(t * d) + 1;					   // compute the filter point
+    	 Integer cut = 0;
+    	 
+    	 if (d == 1) {  // special case when sentence is 1 word
+    		 cut = 1;
+    	 } else {    		
+    		 cut = cutoff;
+    	 }
+    	 
+    	 for (Integer i = 0; i < cut; i++){
+    			 String token = sentence.toString().split(";")[i];
+    			 context.write(new Text(token), new Text(key_1.toString()));  // output in inverted index format
+```
+
+The reduced function takes as input a word as key and a list documents it is contained in. We compute the similarity between all the documents in that list (ensuring they have not been compared before) and output documents that are similar.
+
+Specifically we implement the following reducer:
+```java
+public static class Reduce extends Reducer<Text, Text, Text, Text> {
+	  public static Integer numberOfComparisons = 0;
+	  public HashSet<String> comparisons_record = new HashSet<String>();  // we store the comparisons made
+	  public HashMap<Integer, String> documents = new HashMap<Integer, String>(); // we store the documents 
+	  
+	  @Override
+	  
+	  public void setup(Context context) throws IOException, InterruptedException {
+		  File Processed_File = new File("/home/cloudera/Desktop/Massive-Data-Processing/Assignment_2/processed_pg100.txt");
+	      BufferedReader DocumentReader = new BufferedReader(new FileReader(Processed_File)); 			 
+	     	 
+	   	  // we store each document in a HashMap     
+	   	  String case_ = null;
+    	  while ((case_ = DocumentReader.readLine()) != null) {
+    		  String[] document = case_.split(",");                      // documentID & document are comma separated in file 
+	    	  documents.put(Integer.valueOf(document[0]), document[1]);  // store the docID as key and doc as value
+    	  }
+    	  DocumentReader.close();
+	  }
+	  
+	  /*
+	   * For every word (key), the reduce class computes the Jaccard similarity ..
+	   * .. between sentences contained in the values of that word 
+	   * A record of the comparisons made is kept in order not to compare sentences twice
+	   * It outputs the 2 sentences as key and the similarity score (if sim(key_1, key_2) > 0.8) as value
+	   */ 
+      @Override
+      public void reduce(Text key, Iterable<Text> values, Context context)
+              throws IOException, InterruptedException {
+    	 
+    	 float jaccard_sim = 0;
+    	 
+    	 HashSet<String> doc_list = new HashSet<String>();  // we store the docIDs of doc containing that word
+    	 
+    	 for (Text val : values) {
+    		 doc_list.add(val.toString());
+    	 }
+    	 
+         for (String doc_l1 : doc_list) {
+        	 String doc_id1 = doc_l1; 
+        	 for (String doc_l2: doc_list) {
+        		 String doc_id2 = doc_l2;
+        		 Integer max_key = Math.max(Integer.valueOf(doc_id1), Integer.valueOf(doc_id2));
+        		 Integer min_key = Math.min(Integer.valueOf(doc_id1), Integer.valueOf(doc_id2));
+        			 
+        		 // we do not compare a document with itself.. or if it has already been compared
+       			 if (!doc_id1.equals(doc_id2) && !comparisons_record.contains(min_key + "," + max_key) ) {      			 
+       				 HashSet<String> unique_words = new HashSet<String>();  // we store words in a list with no duplicates
+       				 List<String> union = new ArrayList<String>();          // we store all the words from both sentences
+       				 
+       				 for (String token_1 : documents.get(min_key).toString().split(";")) {
+       					 unique_words.add(token_1);  // spill doc 1's words
+       					 union.add(token_1);
+       				 }
+       				 for (String token_2 : documents.get(max_key).toString().split(";")) {
+        				 unique_words.add(token_2);  // spill doc 2's words
+        				 union.add(token_2);
+         			 }
+        				 
+       				 comparisons_record.add(min_key + "," + max_key);  // record that we have made this comparison
+       				 jaccard_sim = ((float) union.size() - unique_words.size()) / ((float)union.size());  // compute the Jaccard similarity
+       		         numberOfComparisons += 1;
+        		         
+       		         if (jaccard_sim > 0.25){  // we use 0.25 as the cutoff point because otherwise no pairs come up 								
+       		        	 context.write(new Text(min_key + "," + max_key), new Text(" similarity : " + Float.toString(jaccard_sim)));
+```
+
+We lauch the job on the same sample file as previously, with the same similarity threshold (25%) and find that 36743 comparisons were made. We note that we found the same number of similar pairs with both approaches. 
+
+The full code for this job is available [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/src/similarity_joins/inverted_index_similarity.java).
+
+Looking at the job's logs we see that the total run time is 30sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/tree/master/Assignment_2/img)).
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/tree/master/Assignment_2/img)
+
+
+#### c) (10) Explain and justify the difference between a) and b) in the number of performed comparisons, as well as their difference in execution time.
+

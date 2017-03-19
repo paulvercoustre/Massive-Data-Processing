@@ -385,3 +385,10 @@ Looking at the job's logs we see that the total run time is 30sec (see [Job Trac
 
 #### c) (10) Explain and justify the difference between a) and b) in the number of performed comparisons, as well as their difference in execution time.
 
+In both a) and b) we computed the similarities on a sample text with 1000 lines originally. This is because the naive approach woud have been far too consuming both in terms of memory and computation time. Specifically we can calculate the number of comparisons that would have been required:
+
+Num of comparisons = Number of Documents * (Number of Documents - 1) / 2
+Num of comparisons = 115 105 * 115 104 / 2 = 6 624 522 960
+
+With the second approach (inverted index), we were able to compute the similarities for the entire document. In total the job did 8 930 026 comparisons, or about 1.3% of what would have been required with the naive approach.  
+

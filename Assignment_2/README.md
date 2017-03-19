@@ -249,8 +249,8 @@ When we perform all of the above steps on the sample input file (1000 lines), th
 
 The full code for this job is available [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/src/similarity_joins/naive_similarity.java).
 
-Looking at the job's logs we see that the total run time is 28sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/img/Screen%20Shot%202017-03-19%20at%2001.51.01.png)).
-![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/img/Screen%20Shot%202017-03-19%20at%2001.51.01.png)
+Looking at the job's logs we see that the total run time is 28sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/img/Screen%20Shot%202017-03-19%20at%2020.50.04.png)).
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/img/Screen%20Shot%202017-03-19%20at%2020.50.04.png)
 
 The resulting output looks like this:
 ``` 

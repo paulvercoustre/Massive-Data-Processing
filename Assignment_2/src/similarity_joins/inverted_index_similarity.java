@@ -90,7 +90,7 @@ public class inverted_index_similarity extends Configured implements Tool {
     	 Text sentence = new Text(value.toString().split(",")[1]);         // item after comma is the sentence
     	 
     	 Integer d = sentence.toString().split(";").length;                // number of words in the sentence (d)
-    	 float t = (float) 0.25;										   // similarity threshold (t)
+    	 float t = (float) 0.8;										   // similarity threshold (t)
     	 
     	 Integer cutoff = d - Math.round(t * d) + 1;					   // compute the filter point
     	 Integer cut = 0;
@@ -116,7 +116,7 @@ public class inverted_index_similarity extends Configured implements Tool {
 	  @Override
 	  
 	  public void setup(Context context) throws IOException, InterruptedException {
-		  File Processed_File = new File("/home/cloudera/Desktop/Massive-Data-Processing/Assignment_2/processed_pg100.txt");
+		  File Processed_File = new File("/home/cloudera/Desktop/Massive-Data-Processing/Assignment_2/full_processed.txt");
 	      BufferedReader DocumentReader = new BufferedReader(new FileReader(Processed_File)); 			 
 	     	 
 	   	  // we store each document in a HashMap     
@@ -171,7 +171,7 @@ public class inverted_index_similarity extends Configured implements Tool {
        				 jaccard_sim = ((float) union.size() - unique_words.size()) / ((float)union.size());  // compute the Jaccard similarity
        		         numberOfComparisons += 1;
         		         
-       		         if (jaccard_sim > 0.25){  // we use 0.25 as the cutoff point because otherwise no pairs come up 								
+       		         if (jaccard_sim > 0.8){  // we use 0.25 as the cutoff point because otherwise no pairs come up 								
        		        	 context.write(new Text(min_key + "," + max_key), new Text(" similarity : " + Float.toString(jaccard_sim)));
        		         }	 
         				 

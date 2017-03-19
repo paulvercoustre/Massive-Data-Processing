@@ -49,7 +49,7 @@ public class inverted_index_similarity extends Configured implements Tool {
       Job job = new Job(conf);
       job.setJarByClass(inverted_index_similarity.class);
       job.setOutputKeyClass(Text.class);
-      job.setOutputValueClass(Text.class);
+      job.setOutputValueClass(IntWritable.class);
 
       job.setMapperClass(Map.class);
       job.setReducerClass(Reduce.class);
@@ -75,26 +75,8 @@ public class inverted_index_similarity extends Configured implements Tool {
       return 0;
    }
    
-   public static class Map extends Mapper<LongWritable, Text, Text, Text> {
-	  public Integer number_lines = 0;
-      
-      /*
-       * We use the setup method in order to open the file containing the number of lines 
-       * and spill its content only once.
-       */
-	  @Override
-      public void setup(Context context) throws IOException, InterruptedException {
-     	 File File_nb_lines = new File("/home/cloudera/Desktop/Massive-Data-Processing/Assignment_2/nb_lines.txt");
-     	 BufferedReader DocumentReader = new BufferedReader(new FileReader(File_nb_lines)); // we use BuffferedReader to read our stop words file.  			 
-     	 
-     	 // we assign the value in the document to an integer variable     
-     	 String case_ = null;
-     	 while ((case_ = DocumentReader.readLine()) != null) { 
-     		 number_lines = Integer.parseInt(case_);	     	 
-     	 }
-     	 DocumentReader.close();  
-      }
-      
+   public static class Map extends Mapper<LongWritable, Text, Text, IntWritable> {
+           
       /*
        * The map function takes as input a line of the document
        * It parses it, taking the line number and sentence separately 
@@ -107,15 +89,15 @@ public class inverted_index_similarity extends Configured implements Tool {
     	 Integer key_1 = Integer.parseInt(value.toString().split(",")[0]); // item before comma is the key 
     	 Text sentence = new Text(value.toString().split(",")[1]);         // item after comma is the sentence
     	 
-    	 for (Integer key_2 = 1; key_2 < number_lines + 1; key_2++) {  // we get all possible combinations of lines
-    		 if (key_2 != key_1){  // we don't want to compute the similarity of a line with itself...                
-    			 Integer max_key = Math.max(key_1, key_2);
-    			 Integer min_key = Math.min(key_1, key_2);
-    			 // we order the keys so as not to get duplicates
-    			 // we will get both sentences for each key combination in the reducer
-    			 Text combination = new Text(min_key.toString() + "," + max_key.toString());
-    			 context.write(combination, sentence);
-    		 }    		 
+    	 Integer d = sentence.toString().split(";").length;                // number of words in the sentence
+    	 float t = (float) 0.25;										   // similarity threshold
+    	 
+    	 Integer cutoff = d - Math.round(t * d) + 1;					   // compute the filter point
+    	 
+    	 for (Integer i = 0; i < cutoff; i++){
+    		 String token = sentence.toString().split(";")[i];
+    		 context.write(new Text(token), new IntWritable(key_1));
+    		 System.out.println(token + ":" + key_1);
     	 }
       }
    }         

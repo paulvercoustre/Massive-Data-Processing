@@ -85,7 +85,7 @@ public class naive_similarity extends Configured implements Tool {
 	  @Override
       public void setup(Context context) throws IOException, InterruptedException {
      	 File File_nb_lines = new File("/home/cloudera/Desktop/Massive-Data-Processing/Assignment_2/nb_lines.txt");
-     	 BufferedReader DocumentReader = new BufferedReader(new FileReader(File_nb_lines)); // we use BuffferedReader to read our stop words file.  			 
+     	 BufferedReader DocumentReader = new BufferedReader(new FileReader(File_nb_lines));  			 
      	 
      	 // we assign the value in the document to an integer variable     
      	 String case_ = null;

@@ -70,6 +70,8 @@ public class naive_similarity extends Configured implements Tool {
       
       job.waitForCompletion(true);
       
+      System.out.println("Number of Comparisons : " + Reduce.numberOfComparisons);
+      
       return 0;
    }
    
@@ -119,7 +121,7 @@ public class naive_similarity extends Configured implements Tool {
    }         
    
    public static class Reduce extends Reducer<Text, Text, Text, Text> {
-	   
+	  public static Integer numberOfComparisons = 0;
 	  /*
 	   * The reduce class computes the Jaccard similarity between sentences
 	   * The input keys are tuples (key_1, key_2)
@@ -139,10 +141,12 @@ public class naive_similarity extends Configured implements Tool {
         		 unique_words.add(token);         				// add words to HashSet
         		 union.add(token);								// add words to List
         	 }        	 
-         }         
-         jaccard_sim = (union.size() - unique_words.size()) / (union.size());  // compute the Jaccard similarity
-         if (jaccard_sim > 0.8){											
-        	 context.write(key, new Text(Float.toString(jaccard_sim))); 
+         }        
+         jaccard_sim = ((float) union.size() - unique_words.size()) / ((float)union.size());  // compute the Jaccard similarity
+         numberOfComparisons += 1;
+         
+         if (jaccard_sim > 0.25){  // we use 0.25 as the cutoff point because otherwise no pairs come up 								
+        	 context.write(key, new Text(" similarity : " + Float.toString(jaccard_sim))); 
          } 
       }      
    }

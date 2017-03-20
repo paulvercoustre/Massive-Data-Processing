@@ -7,7 +7,7 @@ In this assignment, you will use the document corpus of pg100.txt (from http://w
 #### (a)(2) Remove all stopwords (you can use the stopwords file of your previous assignment), special characters (keep only [a-z],[A-Z] and [0-9]) and keep each unique word only once per line. Don’t keep empty lines.
 
 We start by creating a new project, package and class similarly to what was done in assignment 0 & 1.
-To find the stopwords in pg100.txt we run the same "stopwords" job from the previous assignment on this particular text only. We obtain [this file](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/stopwords/part-r-00000).
+To find the stopwords in pg100.txt we run the same "stopwords" job from the previous assignment on this particular text only. We obtain [this file](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/DBPA_Assign2_PVERCOU/stopwords/part-r-00000).
 
 To remove special characters we apply `replaceAll("[^A-Za-z0-9]"," ")` to the input values of the map function.
 To ensure we don't keep empty lines we simply add the condition `if (!value.toString().replaceAll("[^A-Za-z0-9]"," ").isEmpty())`. Note that we do not transform the input to lower case as it was not required.
@@ -88,7 +88,7 @@ There are 115105 lines in the pre-processed file
 
 #### (c)(7) Order the tokens of each line in ascending order of global frequency.
 
-To get the global frequency of each word in the text we use the wordcount job from assignemnt 0 (available [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/src/pre_process/word_frequency.java)) which we compute on pg100.txt.
+To get the global frequency of each word in the text we use the wordcount job from assignemnt 0 (available [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/DBPA_Assign2_PVERCOU/word_frequency/part-r-00000)) which we compute on pg100.txt.
 We import it in the reduce method and use it to order the words of each sentence as required with a TreeMap. 
 ```java
 public static class Reduce extends Reducer<LongWritable, Text, LongWritable, Text> {
@@ -133,10 +133,10 @@ public static class Reduce extends Reducer<LongWritable, Text, LongWritable, Tex
 	 context.getCounter(FINAL_COUNTER.FINAL_LINE).increment(1);
 ```
 
-You can find the full code for this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/src/pre_process/pre_processing.java).
+You can find the full code for this job [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/DBPA_Assign2_PVERCOU/src/pre_process/pre_processing.java).
 
-Looking at the job's logs we see that the total run time is 32sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/img/Screen%20Shot%202017-03-18%20at%2006.09.35.png)).
-![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/img/Screen%20Shot%202017-03-18%20at%2006.09.35.png)
+Looking at the job's logs we see that the total run time is 32sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/DBPA_Assign2_PVERCOU/img/Screen%20Shot%202017-03-18%20at%2006.09.35.png)).
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/DBPA_Assign2_PVERCOU/img/Screen%20Shot%202017-03-18%20at%2006.09.35.png)
 
 The resulting output looks like this:
 ```
@@ -247,10 +247,10 @@ We implement the following reduce method:
 
 When we perform all of the above steps on the sample input file (1000 lines), the resulting pre-processed file has 855 lines, and when computing the Jaccard similarities, 365813 comparisons are made. Note that we deliberately lowered the similarity cutoff point to 0.25 because otherwise no pair would get written on the output file.
 
-The full code for this job is available [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/src/similarity_joins/naive_similarity.java).
+The full code for this job is available [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/DBPA_Assign2_PVERCOU/src/similarity_joins/naive_similarity.java).
 
-Looking at the job's logs we see that the total run time is 28sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/img/Screen%20Shot%202017-03-19%20at%2020.50.04.png)).
-![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/img/Screen%20Shot%202017-03-19%20at%2020.50.04.png)
+Looking at the job's logs we see that the total run time is 28sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/DBPA_Assign2_PVERCOU/img/Screen%20Shot%202017-03-19%20at%2001.51.01.png)).
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/DBPA_Assign2_PVERCOU/img/Screen%20Shot%202017-03-19%20at%2001.51.01.png)
 
 The resulting output looks like this:
 ``` 
@@ -377,10 +377,10 @@ public static class Reduce extends Reducer<Text, Text, Text, Text> {
 
 We lauch the job on the same sample file as previously, with the same similarity threshold (25%) and find that 36743 comparisons were made. We note that we found the same number of similar pairs with both approaches. 
 
-The full code for this job is available [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/src/similarity_joins/inverted_index_similarity.java).
+The full code for this job is available [here](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/DBPA_Assign2_PVERCOU/src/similarity_joins/inverted_index_similarity.java).
 
-Looking at the job's logs we see that the total run time is 30sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/img/Screen%20Shot%202017-03-19%20at%2020.50.04.png)).
-![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/Assignment_2/img/Screen%20Shot%202017-03-19%20at%2020.50.04.png)
+Looking at the job's logs we see that the total run time is 30sec (see [Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/DBPA_Assign2_PVERCOU/img/Screen%20Shot%202017-03-19%20at%2020.50.04.png)).
+![Job Tracker](https://github.com/paulvercoustre/Massive-Data-Processing/blob/master/DBPA_Assign2_PVERCOU/img/Screen%20Shot%202017-03-19%20at%2020.50.04.png)
 
 
 #### c) (10) Explain and justify the difference between a) and b) in the number of performed comparisons, as well as their difference in execution time.
